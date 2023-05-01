@@ -6,12 +6,12 @@ part of 'memory_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$memoryNotifierHash() => r'1c56fda15e93bd4b64cdb4c16c0411f90e7b484f';
+String _$memoryNotifierHash() => r'7a7ed3f73b94e6b75973726195bfb2bc97159729';
 
 /// See also [MemoryNotifier].
 @ProviderFor(MemoryNotifier)
-final memoryNotifierProvider = AutoDisposeAsyncNotifierProvider<MemoryNotifier,
-    List<Map<String, dynamic>>>.internal(
+final memoryNotifierProvider =
+    AutoDisposeAsyncNotifierProvider<MemoryNotifier, List<Memory>>.internal(
   MemoryNotifier.new,
   name: r'memoryNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -21,5 +21,5 @@ final memoryNotifierProvider = AutoDisposeAsyncNotifierProvider<MemoryNotifier,
   allTransitiveDependencies: null,
 );
 
-typedef _$MemoryNotifier = AutoDisposeAsyncNotifier<List<Map<String, dynamic>>>;
+typedef _$MemoryNotifier = AutoDisposeAsyncNotifier<List<Memory>>;
 // ignore_for_file: unnecessary_raw_strings, subtype_of_sealed_class, invalid_use_of_internal_member, do_not_use_environment, prefer_const_constructors, public_member_api_docs, avoid_private_typedef_functions

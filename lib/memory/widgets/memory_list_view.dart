@@ -25,7 +25,7 @@ class MemoryListView extends ConsumerWidget {
         itemCount: data.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(data[index]['title']),
+            title: Text(data[index].title),
           );
         },
       ),
