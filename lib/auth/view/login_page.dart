@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memories_app/core/core.dart';
 import 'package:memories_app/onboarding/onboarding.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -42,12 +43,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             ));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          duration: const Duration(milliseconds: 2000),
-        ),
-      );
+      context.showAlert(e.toString());
     }
 
     setState(() {
