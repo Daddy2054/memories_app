@@ -13,6 +13,7 @@ class MemoryRepository {
   final _client = Supabase.instance.client;
 
   String get storageUrl => _client.storageUrl;
+  RealtimeChannel get memoryChannel => _client.channel('public:memories');
 
   Future<List<Memory>> getMemories() => _client
       .from('memories')
@@ -46,7 +47,15 @@ class MemoryRepository {
   Future<void> updateMemory({
     required String title,
     required int id,
-  }) async {}
+  }) async {
+    final profileId = _client.auth.currentSession?.user.id;
+
+    await _client
+        .from('memories')
+        .update({'title': title})
+        .eq('id', id)
+        .eq('profile_id', profileId);
+  }
 
   Future<void> deleteMemory(Memory data) async {}
 }

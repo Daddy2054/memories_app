@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -7,8 +8,9 @@ import 'package:memories_app/core/core.dart';
 import 'package:memories_app/memory/memory.dart';
 
 class MemoryItemForm extends ConsumerStatefulWidget {
-  const MemoryItemForm({super.key});
+  const MemoryItemForm({this.data, super.key});
 
+  final Memory? data;
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _MemoryItemFormState();
 }
@@ -17,8 +19,14 @@ class _MemoryItemFormState extends ConsumerState<MemoryItemForm> {
   final _formKey = GlobalKey<FormState>();
   AutovalidateMode? _autovalidateMode;
   bool _isSubmitting = false;
-  final _titleCtrl = TextEditingController();
+  late TextEditingController _titleCtrl;
   File? _file;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleCtrl = TextEditingController(text: widget.data?.title);
+  }
 
   void _popview() {
     if (mounted) {
@@ -46,6 +54,27 @@ class _MemoryItemFormState extends ConsumerState<MemoryItemForm> {
     }
   }
 
+  Future<void> _updateMemory() async {
+    if (widget.data == null) {
+      return;
+    }
+
+    try {
+      setState(() {
+        _isSubmitting = true;
+      });
+
+      await ref.read(memoryRepositoryProvider).updateMemory(
+            title: _titleCtrl.text,
+            id: widget.data!.id,
+          );
+      _popview();
+    } catch (e) {
+      _popview();
+      context.showAlert(e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -57,7 +86,7 @@ class _MemoryItemFormState extends ConsumerState<MemoryItemForm> {
             height: 10,
           ),
           Text(
-            'New Memory',
+            widget.data == null ? 'New Memory' : 'Edit Memory',
             style: TextStyle(fontSize: 30),
           ),
           const SizedBox(
@@ -80,20 +109,33 @@ class _MemoryItemFormState extends ConsumerState<MemoryItemForm> {
           const SizedBox(
             height: 20,
           ),
-          FileUploadField(
-            readOnly: _isSubmitting,
-            onChanged: (file) {
-              setState(() {
-                _file = file;
-              });
-            },
-            validator: (value) {
-              if (value == null) {
-                return 'Please select an image';
-              }
-              return null;
-            },
-          ),
+          if (widget.data?.imageId != null)
+            SizedBox(
+              height: 150,
+              child: Image.network(
+                ref.read(
+                  imageUrlProvider(
+                    userId: widget.data!.profileId,
+                    filename: widget.data!.imageId,
+                  ),
+                ),
+              ),
+            )
+          else
+            FileUploadField(
+              readOnly: _isSubmitting,
+              onChanged: (file) {
+                setState(() {
+                  _file = file;
+                });
+              },
+              validator: (value) {
+                if (value == null) {
+                  return 'Please select an image';
+                }
+                return null;
+              },
+            ),
           const SizedBox(
             height: 20,
           ),
@@ -105,6 +147,8 @@ class _MemoryItemFormState extends ConsumerState<MemoryItemForm> {
                   setState(() {
                     _autovalidateMode = AutovalidateMode.always;
                   });
+                } else if (widget.data != null) {
+                  _updateMemory();
                 } else {
                   _addMemory();
                 }

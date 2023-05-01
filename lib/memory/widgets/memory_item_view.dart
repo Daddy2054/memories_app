@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memories_app/auth/auth.dart';
+import 'package:memories_app/core/core.dart';
 import 'package:memories_app/memory/memory.dart';
 
 class MemoryItemView extends ConsumerWidget {
@@ -9,6 +11,7 @@ class MemoryItemView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authUserProvider).asData?.value;
     final storageUrl = ref.read(memoryRepositoryProvider).storageUrl;
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -19,7 +22,28 @@ class MemoryItemView extends ConsumerWidget {
       child: Stack(
         children: [
           Image.network(
-              "$storageUrl/object/public/memories/${data.profileId}/${data.imageId}"),
+            "$storageUrl/object/public/memories/${data.profileId}/${data.imageId}",
+          ),
+          if (user != null && user.id == data.profileId)
+            Positioned.fill(
+              child: Center(
+                child: FilledButton(
+                  onPressed: () {
+                    context.showBottomSheet(
+                        child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: MemoryItemForm(
+                        data: data,
+                      ),
+                    ));
+                  },
+                  child: const Icon(
+                    Icons.edit,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           Positioned(
             top: 10,
             left: 10,
@@ -36,7 +60,8 @@ class MemoryItemView extends ConsumerWidget {
                   fontStyle: FontStyle.italic,
                 ),
               ),
-            ),),
+            ),
+          ),
           Positioned(
             bottom: 10,
             right: 10,
