@@ -10,6 +10,8 @@ MemoryRepository memoryRepository(MemoryRepositoryRef _) => MemoryRepository();
 class MemoryRepository {
   final _client = Supabase.instance.client;
 
+  String get storageUrl => _client.storageUrl;
+
   Future<List<Memory>> getMemories() => _client
       .from('memories')
       .select<List<Map<String, dynamic>>>(
