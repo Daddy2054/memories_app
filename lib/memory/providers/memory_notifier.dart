@@ -22,9 +22,12 @@ class MemoryNotifier extends _$MemoryNotifier {
       ),
       (payload, [_]) async {
         print(payload);
-        state = await AsyncValue.guard(
-          () async => ref.read(memoryRepositoryProvider).getMemories(),
-        );
+
+        if (['INSERT', 'UPDATE', 'DELETE'].contains(payload['eventType'])) {
+          state = await AsyncValue.guard(
+            () async => ref.read(memoryRepositoryProvider).getMemories(),
+          );
+        }
       },
     ).subscribe();
   }

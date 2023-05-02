@@ -75,6 +75,26 @@ class _MemoryItemFormState extends ConsumerState<MemoryItemForm> {
     }
   }
 
+  Future<void> _deleteMemory() async {
+    if (widget.data == null) {
+      return;
+    }
+
+    try {
+      setState(() {
+        _isSubmitting = true;
+      });
+
+      await ref.read(memoryRepositoryProvider).deleteMemory(
+            widget.data!,
+          );
+      _popview();
+    } catch (e) {
+      _popview();
+      context.showAlert(e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -82,15 +102,15 @@ class _MemoryItemFormState extends ConsumerState<MemoryItemForm> {
       autovalidateMode: _autovalidateMode,
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Text(
             widget.data == null ? 'New Memory' : 'Edit Memory',
-            style: TextStyle(fontSize: 30),
+            style: const TextStyle(fontSize: 30),
           ),
           const SizedBox(
-            height: 30,
+            height: 10,
           ),
           TextFormField(
             controller: _titleCtrl,
@@ -142,7 +162,7 @@ class _MemoryItemFormState extends ConsumerState<MemoryItemForm> {
           SizedBox(
             width: double.infinity,
             child: FilledButton(
-              onPressed: () async {
+              onPressed: _isSubmitting ? null : () async {
                 if (_formKey.currentState!.validate() == false) {
                   setState(() {
                     _autovalidateMode = AutovalidateMode.always;
@@ -153,17 +173,18 @@ class _MemoryItemFormState extends ConsumerState<MemoryItemForm> {
                   _addMemory();
                 }
               },
-              child: Text('Submit'),
+              child: const Text('Submit'),
             ),
           ),
           const SizedBox(
             height: 10,
           ),
           SizedBox(
+            height: 35.0,
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: () {},
-              child: Text('Delete'),
+              onPressed: _isSubmitting ? null : _deleteMemory,
+              child: const Text('Delete'),
             ),
           ),
         ],
