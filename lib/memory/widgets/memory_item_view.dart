@@ -12,7 +12,7 @@ class MemoryItemView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authUserProvider).asData?.value;
-    
+
     return Card(
       clipBehavior: Clip.antiAlias,
       elevation: 4,
@@ -27,6 +27,13 @@ class MemoryItemView extends ConsumerWidget {
                 userId: data.profileId,
                 filename: data.imageId,
               ),
+            ),
+          ),
+          Positioned(
+            top: 6,
+            right: 10,
+            child: LikesCounter(
+              data: data,
             ),
           ),
           if (user != null && user.id == data.profileId)

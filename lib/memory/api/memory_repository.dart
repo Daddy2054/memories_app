@@ -63,11 +63,32 @@ class MemoryRepository {
 
     await _client.storage.from('memories').remove(['$profileId/$imageId']);
 
-
     await _client
         .from('memories')
         .delete()
         .eq('id', data.id)
+        .eq('profile_id', profileId);
+  }
+
+  Stream<List<Map<String, dynamic>>> get likes =>
+      _client.from('likes').stream(primaryKey: ['id']);
+
+  Future<void> addLike(int memoryId) async {
+    final profileId = _client.auth.currentSession?.user.id;
+
+    await _client.from('likes').insert({
+      'memory_id': memoryId,
+      'profile_id': profileId,
+    });
+  }
+
+  Future<void> removeLike(int memoryId) async {
+    final profileId = _client.auth.currentSession?.user.id;
+
+    await _client
+        .from('likes')
+        .delete()
+        .eq('memory_id', memoryId)
         .eq('profile_id', profileId);
   }
 }
